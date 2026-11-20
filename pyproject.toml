@@ -1,0 +1,19 @@
+[project]
+name = "vsearch"
+version = "0.1.0"
+description = "Distributed video search - v1 local prototype"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "psycopg[binary]>=3.2",   # PostgreSQL driver
+    "pgvector>=0.3",          # lets psycopg send/receive numpy arrays as VECTOR
+    "boto3>=1.35",            # S3 client, works against MinIO
+    "python-dotenv>=1.0",     # loads .env
+    "numpy>=1.26",
+    "torch>=2.4",             # deep learning runtime (uses the Apple GPU via "mps")
+    "open_clip_torch>=2.26",  # CLIP models + pretrained weights
+    "pillow>=10",             # image loading
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
