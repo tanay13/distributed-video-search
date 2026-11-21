@@ -1,0 +1,72 @@
+# Who owns which files. Single source of truth for the team (and for Claude, see CLAUDE.md).
+#
+# Format:  <path-pattern>   <owner>
+#   owner   = tanay | aditya | darshil | shared
+#   pattern = glob relative to the repo root; a pattern ending in "/" means "everything under it".
+#   The LAST matching line wins, so put general rules first and specific ones after.
+#
+# Rules:
+#   - Only the owner edits an owned file. Need a change? Ask the owner (see docs/WORK_PLAN.md §6).
+#   - "shared" files are contracts. Change them only in a small PR titled "[contract] ..."
+#     that every teammate knows about, and merge it fast.
+#   - .claude/hooks/check_ownership.py reads this file and makes Claude ask before editing
+#     a file that isn't yours.
+
+# v1 prototype files (vsearch/ingest.py, worker.py, ...): Tanay moves them into the new layout in
+# Phase 0, then this line goes away. It must stay FIRST because it also matches files in subfolders.
+vsearch/*.py                        tanay
+
+# ---------------------------------------------------------------- shared contracts
+OWNERS                              shared
+CLAUDE.md                           shared
+README.md                           shared
+.gitignore                          shared
+.env.example                        shared
+pyproject.toml                      shared
+uv.lock                             shared
+.claude/                            shared
+docs/WORK_PLAN.md                   shared
+docs/IMPLEMENTATION_GUIDE.md        shared
+vsearch/__init__.py                 shared
+vsearch/common/                     shared
+db/init/                            shared
+
+# ---------------------------------------------------------------- Tanay: infrastructure + pipeline
+docker-compose.yml                  tanay
+Docker-setup.md                     tanay
+Dockerfile*                         tanay
+k8s/                                tanay
+proto/                              tanay
+scripts/                            tanay
+db/migrations/1*                    tanay
+vsearch/pipeline/                   tanay
+vsearch/api/                        tanay
+tests/pipeline/                     tanay
+tests/api/                          tanay
+experiments/scaling/                tanay
+experiments/failure/                tanay
+docs/areas/pipeline.md              tanay
+docs/team/STATUS-tanay.md           tanay
+
+# ---------------------------------------------------------------- Aditya: indexing (frames, CLIP, Whisper, scenes)
+vsearch/indexing/                   aditya
+vsearch/models/                     aditya
+db/migrations/2*                    aditya
+tests/indexing/                     aditya
+experiments/adaptive/               aditya
+docs/areas/indexing.md              aditya
+docs/team/STATUS-aditya.md          aditya
+
+# ---------------------------------------------------------------- Darshil: search (retrieval, planner, reranker, timeline, eval)
+vsearch/search/                     darshil
+db/migrations/3*                    darshil
+tests/search/                       darshil
+eval/                               darshil
+experiments/temporal/               darshil
+docs/areas/search.md                darshil
+docs/team/STATUS-darshil.md         darshil
+
+# ---------------------------------------------------------------- per-person files inside shared folders
+eval/queries/tanay.jsonl            tanay
+eval/queries/aditya.jsonl           aditya
+eval/queries/darshil.jsonl          darshil
