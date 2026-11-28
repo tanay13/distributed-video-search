@@ -1,10 +1,10 @@
 """Sanity check: can we reach PostgreSQL (with pgvector + our tables) and the MinIO bucket?
 
-Run:  uv run python -m vsearch.check
+Run:  uv run python -m vsearch.pipeline.check
 """
-from vsearch import storage
-from vsearch.config import settings
-from vsearch.db import connect
+from vsearch.common import storage
+from vsearch.common.config import settings
+from vsearch.common.db import connect
 
 
 def main() -> None:

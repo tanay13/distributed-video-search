@@ -1,4 +1,4 @@
-"""Step 4: CLIP wrapper. The ONLY place that knows which model we use.
+"""CLIP wrapper. The ONLY code that runs the model (the model id lives in vsearch/models/__init__.py).
 
 Both indexing (images) and search (text) go through this file, so they are guaranteed to use
 the same model. Vectors from two different models live in different spaces and can't be compared.
@@ -10,8 +10,8 @@ import open_clip
 import torch
 from PIL import Image
 
-MODEL_NAME = "ViT-B-32"              # 512-dim output, matches VECTOR(512) in the schema
-PRETRAINED = "laion2b_s34b_b79k"     # which set of trained weights to download
+from vsearch.models import CLIP_MODEL as MODEL_NAME
+from vsearch.models import CLIP_PRETRAINED as PRETRAINED
 
 DEVICE = ("mps" if torch.backends.mps.is_available()       # Apple GPU
           else "cuda" if torch.cuda.is_available()          # NVIDIA GPU (the T4 in the cloud)
@@ -49,7 +49,7 @@ def embed_images(paths: list) -> np.ndarray:
 
 @torch.no_grad()
 def embed_text(text: str) -> np.ndarray:
-    """One sentence -> array of shape (512,). Used by search in step 5."""
+    """One sentence -> array of shape (512,). Used by search."""
     load()
     tokens = _tokenizer([text]).to(DEVICE)
     return _normalize(_model.encode_text(tokens))[0]

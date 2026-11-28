@@ -2,7 +2,7 @@
 import boto3
 from botocore.config import Config
 
-from vsearch.config import settings
+from vsearch.common.config import settings
 
 _client = boto3.client(
     "s3",

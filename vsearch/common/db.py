@@ -2,7 +2,7 @@
 import psycopg
 from pgvector.psycopg import register_vector
 
-from vsearch.config import settings
+from vsearch.common.config import settings
 
 
 def connect() -> psycopg.Connection:

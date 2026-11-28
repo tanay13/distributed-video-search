@@ -1,12 +1,12 @@
-"""Step 2: register a local video so workers can index it.
+"""Register a local video so workers can index it.
 
-Run:  uv run python -m vsearch.ingest path/to/video.mp4
+Run:  uv run python -m vsearch.pipeline.ingest path/to/video.mp4
 
 What it does (this is what POST /videos will do later):
   1. get the video duration with ffprobe
   2. upload the file to MinIO at raw/{video_id}/original.mp4
   3. insert one row in `videos` and N PENDING rows in `segments`
-Workers then pick up the PENDING segments (step 3).
+Workers then pick up the PENDING segments (vsearch.pipeline.worker).
 """
 import json
 import subprocess
@@ -14,9 +14,11 @@ import sys
 import uuid
 from pathlib import Path
 
-from vsearch import storage
-from vsearch.config import settings
-from vsearch.db import connect
+from vsearch import indexing
+from vsearch.common import storage
+from vsearch.common.config import settings
+from vsearch.common.db import connect
+from vsearch.pipeline import settings as pipeline_settings
 
 
 def probe_duration(path: str) -> float:
@@ -50,7 +52,8 @@ def ingest(path: str) -> str:
     object_key = f"raw/{video_id}/original{Path(path).suffix.lower()}"
 
     duration = probe_duration(path)
-    segments = make_segments(duration, settings.segment_sec, settings.segment_overlap_sec)
+    segments = make_segments(duration, pipeline_settings.SEGMENT_SEC, pipeline_settings.SEGMENT_OVERLAP_SEC)
+    config_version = indexing.config_version()   # which indexing settings this video is indexed with
 
     storage.upload_file(path, object_key)
     print(f"Uploaded {filename} ({duration:.1f}s) -> s3://{settings.s3_bucket}/{object_key}")
@@ -58,9 +61,9 @@ def ingest(path: str) -> str:
     # One transaction: either the video and all its segments exist, or none do.
     with connect() as conn:
         conn.execute(
-            "INSERT INTO videos (video_id, object_key, filename, duration_sec, status) "
-            "VALUES (%s, %s, %s, %s, 'INDEXING')",
-            (video_id, object_key, filename, duration),
+            "INSERT INTO videos (video_id, object_key, filename, duration_sec, status, config_version) "
+            "VALUES (%s, %s, %s, %s, 'INDEXING', %s)",
+            (video_id, object_key, filename, duration, config_version),
         )
         with conn.cursor() as cur:
             cur.executemany(
@@ -68,7 +71,7 @@ def ingest(path: str) -> str:
                 [(video_id, i, s, e) for i, (s, e) in enumerate(segments)],
             )
 
-    print(f"video_id={video_id}  segments={len(segments)}")
+    print(f"video_id={video_id}  segments={len(segments)}  config_version={config_version}")
     for i, (s, e) in enumerate(segments):
         print(f"  segment {i}: {s:7.2f}s -> {e:7.2f}s  PENDING")
     return video_id
@@ -76,5 +79,5 @@ def ingest(path: str) -> str:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        sys.exit("usage: python -m vsearch.ingest <video_file>")
+        sys.exit("usage: python -m vsearch.pipeline.ingest <video_file>")
     ingest(sys.argv[1])

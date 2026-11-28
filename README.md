@@ -204,6 +204,10 @@ Each event score combines the modalities with the planner's weights: `w_visual *
 
 ## 6. Repository layout (proposed)
 
+> **Actual layout:** the code lives in one Python package, `vsearch/` (`common/`, `pipeline/`, `api/`,
+> `models/`, `indexing/`, `search/`), split by owner. See `docs/WORK_PLAN.md` §2 for the real tree and
+> `OWNERS` for who owns what. The tree below is the original proposal.
+
 ```text
 .
 ├── README.md
