@@ -12,10 +12,6 @@
 #   - .claude/hooks/check_ownership.py reads this file and makes Claude ask before editing
 #     a file that isn't yours.
 
-# v1 prototype files (vsearch/ingest.py, worker.py, ...): Tanay moves them into the new layout in
-# Phase 0, then this line goes away. It must stay FIRST because it also matches files in subfolders.
-vsearch/*.py                        tanay
-
 # ---------------------------------------------------------------- shared contracts
 OWNERS                              shared
 CLAUDE.md                           shared

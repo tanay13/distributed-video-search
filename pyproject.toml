@@ -12,8 +12,28 @@ dependencies = [
     "torch>=2.4",             # deep learning runtime (uses the Apple GPU via "mps")
     "open_clip_torch>=2.26",  # CLIP models + pretrained weights
     "pillow>=10",             # image loading
+    # pipeline + api (Tanay)
+    "fastapi>=0.165.0",       # HTTP API (T5)
+    "uvicorn[standard]>=0.54.0",
+    "python-multipart>=0.0.34",   # multipart video upload
+    "httpx>=0.29.0",          # API tests / HTTP client
+    "pika>=1.5.0",            # RabbitMQ (T2)
+    "redis>=8.2.0",           # claims, progress, search cache (T3, T5)
+    "protobuf>=7.36.2",       # task messages (T4)
+    # indexing (Aditya)
+    "faster-whisper>=1.2.1",  # speech-to-text (A3)
+    "scenedetect>=0.7.3",     # scene cuts (A4)
+    "opencv-python-headless>=5.1.0.95",  # frame diffs for adaptive sampling (A2)
+    # search (Darshil)
+    "anthropic>=2.14.0",      # LLM query planner (D4)
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "grpcio-tools>=1.85.4",
+    "pytest>=9.2.0",
+]

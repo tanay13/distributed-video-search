@@ -1,4 +1,4 @@
-"""All settings in one place. Values come from .env (the same file docker compose uses)."""
+"""Shared settings: database + object storage only. Values come from .env (the same file docker compose uses)."""
 import os
 from dataclasses import dataclass
 
@@ -22,10 +22,7 @@ class Settings:
     s3_secret_key: str = os.getenv("S3_SECRET_KEY", os.environ["MINIO_ROOT_PASSWORD"])
     s3_bucket: str = os.getenv("MINIO_BUCKET", "videos")
 
-    # Indexing settings (used in later steps)
-    segment_sec: float = float(os.getenv("SEGMENT_SEC", "30"))          # length of each segment
-    segment_overlap_sec: float = float(os.getenv("SEGMENT_OVERLAP_SEC", "2"))
-    fixed_fps: float = float(os.getenv("FIXED_FPS", "1"))               # frames sampled per second
+    # Area-specific settings do NOT go here: see vsearch/{pipeline,indexing,search}/settings.py
 
     @property
     def pg_dsn(self) -> str:
